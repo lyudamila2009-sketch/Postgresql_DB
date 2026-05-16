@@ -6,7 +6,7 @@ where duration = (select max(duration) from tracks);
 
 select name, duration
 from tracks
-where duration >= 3.5;
+where duration >= '00:03:30';
 
 select name,year
 from collections
@@ -18,7 +18,8 @@ where pseudonym not like '% %';
 
 select name
 from tracks
-where name like '%мой%' or name like '%my%';
+where name ilike 'мой %' or name ilike '% мой' or name ilike '% мой %' or name ilike 'мой'
+or name ilike 'my %' or name ilike '% my' or name ilike '% my %' or name ilike 'my';
 
 --Задание №3
 
@@ -28,7 +29,7 @@ inner join genres g
 on s.genre_id  = g.id 
 group by g."name"  ;
 
-select t."name" 
+select count(t."name") 
 from tracks t 
 inner join alboms a 
 on t.albom_id = a.id 
@@ -40,13 +41,20 @@ inner join alboms a
 on t.albom_id = a.id 
 group by a."name"; 
 
-select distinct s2.pseudonym 
+select s2.pseudonym 
 from singersalboms s 
 inner join alboms a
 on a.id = s.albom_id
 inner join singers s2 
 on s.singer_id  = s2.id 
-where a."year" != 2020;
+where s2.id != (select singers.id
+from singers
+inner join singersalboms
+on singers.id = singersalboms.singer_id
+inner join alboms
+on alboms.id = singersalboms.albom_id
+where alboms.year = 2020);
+
 
 select distinct c."name" 
 from collections c 
@@ -61,7 +69,8 @@ on s.singer_id = singers.id
 where singers.pseudonym = 'Britney Spears';
 
 --Задание 4
-select alboms."name" 
+
+select alboms."name"
 from alboms
 inner join singersalboms s 
 on s.albom_id  = alboms.id
@@ -69,8 +78,14 @@ inner join singers
 on s.singer_id = singers.id
 inner join singersgenres sg
 on sg.singer_id = singers.id 
-group by alboms."name" 
-having count(sg.genre_id ) > 1;
+group by alboms."name",singers.id 
+having singers.id = (select singers.id
+from singersgenres as sg
+inner join singers
+on singers.id = sg.singer_id
+group by singers.id
+having count(sg.genre_id) > 1);
+
 
 select tracks."name" 
 from tracks

@@ -1,5 +1,5 @@
-createdb -U postgres music_service
-psql -U postgres -d test
+/*createdb -U postgres music_service
+psql -U postgres -d test*/
 
 
 CREATE TABLE IF NOT EXISTS singers(
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS alboms(
 CREATE TABLE IF NOT EXISTS tracks(
 	id SERIAL PRIMARY KEY,
 	albom_id INTEGER NOT NULL REFERENCES alboms(id),
-	duration NUMERIC CHECK (duration >  0),
+	duration TIME,
 	name VARCHAR(80)
 );
 
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS singersgenres(
 );
 
 /*многие ко многим*/
-CREATE TABLE IF NOT EXISTS singersalboms lboms(
+CREATE TABLE IF NOT EXISTS singersalboms(
 	/*id SERIAL PRIMARY KEY,*/
 	albom_id INTEGER NOT NULL REFERENCES alboms(id),
 	singer_id INTEGER NOT NULL REFERENCES singers(id),
